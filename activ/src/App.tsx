@@ -1,25 +1,25 @@
-import { useState, useRef } from 'react';
-import { format } from 'date-fns';
-import './App.css';
+import { useState, useRef } from 'react'
+import { format } from 'date-fns'
+import './App.css'
 
 function App() {
   type Work = {
-    date: Date;
-    dist: number;
+    date: Date
+    dist: number
   };
 
-  const [works, changeWork] = useState<Work[]>([]);
-  const dateRef = useRef<HTMLInputElement>(null);
-  const scoreRef = useRef<HTMLInputElement>(null);
+  const [works, changeWork] = useState<Work[]>([])
+  const dateRef = useRef<HTMLInputElement>(null)
+  const scoreRef = useRef<HTMLInputElement>(null)
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const dateValue = dateRef.current?.value;
-    const distValue = parseFloat(scoreRef.current?.value || '0');
+    const distValue = parseFloat(scoreRef.current?.value || '0')
 
     if (!dateValue || isNaN(distValue)) {
-      alert('Пожалуйста, заполните все поля формы корректно.');
+      alert('Пожалуйста, заполните все поля формы корректно.')
       return;
     }
 
@@ -39,22 +39,22 @@ function App() {
         dist: distValue,
       };
 
-      changeWork((prevWorks) => [...prevWorks, newWork]);
+      changeWork((prevWorks) => [...prevWorks, newWork])
     }
   };
 
   const handleDelete = (index: number) => {
-    changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index));
+    changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index))
   };
 
   const handleEdit = (index: number) => {
     const work = works[index];
-    dateRef.current!.value = format(work.date, 'yyyy-MM-dd');
+    dateRef.current!.value = format(work.date, 'yyyy-MM-dd')
     scoreRef.current!.value = String(work.dist);
-    changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index));
+    changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index))
   };
 
-  const sortedWorks = [...works].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const sortedWorks = [...works].sort((a, b) => b.date.getTime() - a.date.getTime())
 
   return (
     <>
