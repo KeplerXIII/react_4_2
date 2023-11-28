@@ -38,16 +38,23 @@ function App() {
         date: new Date(dateValue),
         dist: distValue,
       };
-  
+
       changeWork((prevWorks) => [...prevWorks, newWork]);
     }
-
-    e.currentTarget.reset();
   };
 
   const handleDelete = (index: number) => {
     changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index));
   };
+
+  const handleEdit = (index: number) => {
+    const work = works[index];
+    dateRef.current!.value = format(work.date, 'yyyy-MM-dd');
+    scoreRef.current!.value = String(work.dist);
+    changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index));
+  };
+
+  const sortedWorks = [...works].sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return (
     <>
@@ -57,15 +64,16 @@ function App() {
           <input type='date' name='date' ref={dateRef} />
           <label htmlFor='score'>Пройдено км.</label>
           <input type='number' name='score' ref={scoreRef} />
-          <button type='submit'>Добавить</button>
+          <button type='submit'>Ок</button>
         </form>
       </div>
       <div className='work-list'>
-        {works.map((work, index) => (
+        {sortedWorks.map((work, index) => (
           <div key={index}>
             <p>Дата: {format(work.date, 'dd-MM-yyyy')}</p>
             <p>Расстояние: {work.dist} км</p>
             <button onClick={() => handleDelete(index)}>Удалить</button>
+            <button onClick={() => handleEdit(index)}>Редактировать</button>
           </div>
         ))}
       </div>
