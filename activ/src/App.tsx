@@ -50,11 +50,11 @@ function App() {
   const handleEdit = (index: number) => {
     const work = works[index];
     dateRef.current!.value = format(work.date, 'yyyy-MM-dd')
-    scoreRef.current!.value = String(work.dist);
-    changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index))
+    scoreRef.current!.value = String(work.dist)
+    // changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index))
   };
 
-  const sortedWorks = [...works].sort((a, b) => b.date.getTime() - a.date.getTime())
+  // const sortedWorks = [...works].sort((a, b) => b.date.getTime() - a.date.getTime())
 
   return (
     <>
@@ -68,7 +68,7 @@ function App() {
         </form>
       </div>
       <div className='work-list'>
-        {sortedWorks.map((work, index) => (
+        {works.map((work, index) => (
           <div key={index}>
             <p>Дата: {format(work.date, 'dd-MM-yyyy')}</p>
             <p>Расстояние: {work.dist} км</p>
