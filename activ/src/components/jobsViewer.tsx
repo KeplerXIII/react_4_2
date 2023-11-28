@@ -27,6 +27,7 @@ export function JobsViewer() {
 
     const existingWork = works.find((work) => format(work.date, 'yyyy-MM-dd') === dateValue)
 
+
     if (existingWork) {
       changeWork((prevWorks) =>
         prevWorks.map((work) =>
@@ -37,8 +38,8 @@ export function JobsViewer() {
       editingIdRef.current = null
     } else if (editingIdRef.current !== null) {
       changeWork((prevWorks) =>
-        prevWorks.map((work) =>
-          work.id === editingIdRef.current ? { ...work, date: new Date(dateValue), dist: distValue } : work
+        prevWorks.map((work) => 
+            work.id === editingIdRef.current ? { ...work, date: new Date(dateValue), dist: distValue } : work
         )
       )
 
