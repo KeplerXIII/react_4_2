@@ -4,57 +4,79 @@ import './App.css'
 
 function App() {
   type Work = {
+    id: number
     date: Date
     dist: number
-  };
+  }
 
   const [works, changeWork] = useState<Work[]>([])
   const dateRef = useRef<HTMLInputElement>(null)
   const scoreRef = useRef<HTMLInputElement>(null)
+  const editingIdRef = useRef<number | null>(null)
+
+  const generateUniqueId = () => {
+    return Math.floor(Math.random() * 1000000)
+  }
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const dateValue = dateRef.current?.value;
+    const dateValue = dateRef.current?.value
     const distValue = parseFloat(scoreRef.current?.value || '0')
 
     if (!dateValue || isNaN(distValue)) {
       alert('Пожалуйста, заполните все поля формы корректно.')
-      return;
+      return
     }
 
-    const existingWorkIndex = works.findIndex(
-      (work) => work.date.toISOString() === new Date(dateValue).toISOString()
-    );
+    const existingWork = works.find((work) => format(work.date, 'yyyy-MM-dd') === dateValue)
 
-    if (existingWorkIndex !== -1) {
+    if (existingWork) {
       changeWork((prevWorks) =>
-        prevWorks.map((work, index) =>
-          index === existingWorkIndex ? { ...work, dist: work.dist + distValue } : work
+        prevWorks.map((work) =>
+          work.id === existingWork.id ? { ...work, dist: work.dist + distValue } : work
         )
-      );
+      )
+
+      editingIdRef.current = null
+    } else if (editingIdRef.current !== null) {
+      changeWork((prevWorks) =>
+        prevWorks.map((work) =>
+          work.id === editingIdRef.current ? { ...work, date: new Date(dateValue), dist: distValue } : work
+        )
+      )
+
+      editingIdRef.current = null
     } else {
+      // Добавление нового элемента
       const newWork: Work = {
+        id: generateUniqueId(),
         date: new Date(dateValue),
         dist: distValue,
-      };
+      }
 
       changeWork((prevWorks) => [...prevWorks, newWork])
     }
-  };
 
-  const handleDelete = (index: number) => {
-    changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index))
-  };
+    e.currentTarget.reset()
+  }
 
-  const handleEdit = (index: number) => {
-    const work = works[index];
-    dateRef.current!.value = format(work.date, 'yyyy-MM-dd')
-    scoreRef.current!.value = String(work.dist)
-    // changeWork((prevWorks) => prevWorks.filter((_, i) => i !== index))
-  };
+  const handleDelete = (id: number) => {
+    changeWork((prevWorks) => prevWorks.filter((work) => work.id !== id))
+  }
 
-  // const sortedWorks = [...works].sort((a, b) => b.date.getTime() - a.date.getTime())
+  const handleEdit = (id: number) => {
+
+    editingIdRef.current = id
+
+    const work = works.find((w) => w.id === id)
+    if (work) {
+      dateRef.current!.value = format(work.date, 'yyyy-MM-dd')
+      scoreRef.current!.value = String(work.dist)
+    }
+  }
+
+  const sortedWorks = [...works].sort((a, b) => b.date.getTime() - a.date.getTime())
 
   return (
     <>
@@ -64,21 +86,21 @@ function App() {
           <input type='date' name='date' ref={dateRef} />
           <label htmlFor='score'>Пройдено км.</label>
           <input type='number' name='score' ref={scoreRef} />
-          <button type='submit'>Ок</button>
+          <button type='submit'>{editingIdRef.current !== null ? 'Редактировать' : 'Добавить'}</button>
         </form>
       </div>
       <div className='work-list'>
-        {works.map((work, index) => (
-          <div key={index}>
+        {sortedWorks.map((work) => (
+          <div key={work.id}>
             <p>Дата: {format(work.date, 'dd-MM-yyyy')}</p>
             <p>Расстояние: {work.dist} км</p>
-            <button onClick={() => handleDelete(index)}>Удалить</button>
-            <button onClick={() => handleEdit(index)}>Редактировать</button>
+            <button onClick={() => handleDelete(work.id)}>Удалить</button>
+            <button onClick={() => handleEdit(work.id)}>Редактировать</button>
           </div>
         ))}
       </div>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
